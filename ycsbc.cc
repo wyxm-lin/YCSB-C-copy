@@ -25,7 +25,7 @@ string ParseCommandLine(int argc, const char *argv[], utils::Properties &props);
 
 int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops,
     bool is_loading) {
-  db->Init();
+  db->Init(); // comment 此处初始化其实啥都没干
   ycsbc::Client client(*db, *wl);
   int oks = 0;
   for (int i = 0; i < num_ops; ++i) {
@@ -43,7 +43,7 @@ int main(const int argc, const char *argv[]) {
   utils::Properties props;
   string file_name = ParseCommandLine(argc, argv, props);
 
-  ycsbc::DB *db = ycsbc::DBFactory::CreateDB(props);
+  ycsbc::DB *db = ycsbc::DBFactory::CreateDB(props); // comment 一个共享数据库指针
   if (!db) {
     cout << "Unknown database name " << props["dbname"] << endl;
     exit(0);
@@ -59,7 +59,7 @@ int main(const int argc, const char *argv[]) {
   int total_ops = stoi(props[ycsbc::CoreWorkload::RECORD_COUNT_PROPERTY]);
   for (int i = 0; i < num_threads; ++i) {
     actual_ops.emplace_back(async(launch::async,
-        DelegateClient, db, &wl, total_ops / num_threads, true));
+        DelegateClient, db, &wl, total_ops / num_threads, true)); // comment 将total个任务平均分配给多个线程
   }
   assert((int)actual_ops.size() == num_threads);
 
@@ -71,23 +71,23 @@ int main(const int argc, const char *argv[]) {
   cerr << "# Loading records:\t" << sum << endl;
 
   // Peforms transactions
-  actual_ops.clear();
+  actual_ops.clear(); // comment 清空
   total_ops = stoi(props[ycsbc::CoreWorkload::OPERATION_COUNT_PROPERTY]);
   utils::Timer<double> timer;
-  timer.Start();
+  timer.Start(); // comment 此处开始计时
   for (int i = 0; i < num_threads; ++i) {
     actual_ops.emplace_back(async(launch::async,
-        DelegateClient, db, &wl, total_ops / num_threads, false));
+        DelegateClient, db, &wl, total_ops / num_threads, false)); // comment 重新生成
   }
   assert((int)actual_ops.size() == num_threads);
 
-  sum = 0;
+  sum = 0; // comment 此处sum无用
   for (auto &n : actual_ops) {
     assert(n.valid());
     sum += n.get();
   }
-  double duration = timer.End();
-  cerr << "# Transaction throughput (KTPS)" << endl;
+  double duration = timer.End(); // 此处结束计时
+  cerr << "# Transaction throughput (KTPS)" << endl; // TPS: Transactions Per Second
   cerr << props["dbname"] << '\t' << file_name << '\t' << num_threads << '\t';
   cerr << total_ops / duration / 1000 << endl;
 }

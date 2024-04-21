@@ -207,7 +207,7 @@ inline std::string CoreWorkload::NextTransactionKey() {
   return BuildKeyName(key_num);
 }
 
-inline std::string CoreWorkload::BuildKeyName(uint64_t key_num) {
+inline std::string CoreWorkload::BuildKeyName(uint64_t key_num) { // comment 生成key
   if (!ordered_inserts_) {
     key_num = utils::Hash(key_num);
   }
