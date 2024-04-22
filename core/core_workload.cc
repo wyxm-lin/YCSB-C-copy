@@ -186,7 +186,7 @@ ycsbc::Generator<uint64_t> *CoreWorkload::GetFieldLenGenerator(
   }
 }
 
-void CoreWorkload::BuildValues(std::vector<ycsbc::DB::KVPair> &values) {
+void CoreWorkload::BuildValues(std::vector<ycsbc::DB::KVPair> &values) { // 用于生成values comment 其实这样会出现两次拷贝
   for (int i = 0; i < field_count_; ++i) {
     ycsbc::DB::KVPair pair;
     pair.first.append("field").append(std::to_string(i));
@@ -195,7 +195,7 @@ void CoreWorkload::BuildValues(std::vector<ycsbc::DB::KVPair> &values) {
   }
 }
 
-void CoreWorkload::BuildUpdate(std::vector<ycsbc::DB::KVPair> &update) {
+void CoreWorkload::BuildUpdate(std::vector<ycsbc::DB::KVPair> &update) { // 用于生成后面需要更改的key-value comment 其实这样会出现两次拷贝
   ycsbc::DB::KVPair pair;
   pair.first.append(NextFieldName());
   pair.second.append(field_len_generator_->Next(), utils::RandomPrintChar());

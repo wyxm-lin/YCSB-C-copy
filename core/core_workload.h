@@ -164,6 +164,7 @@ class CoreWorkload {
       field_len_generator_(NULL), key_generator_(NULL), key_chooser_(NULL),
       field_chooser_(NULL), scan_len_chooser_(NULL), insert_key_sequence_(3),
       ordered_inserts_(true), record_count_(0) {
+        // read_all_fields_ = true; // comment 读全域
   }
   
   virtual ~CoreWorkload() {
@@ -211,10 +212,12 @@ inline std::string CoreWorkload::BuildKeyName(uint64_t key_num) { // comment 生
   if (!ordered_inserts_) {
     key_num = utils::Hash(key_num);
   }
+  key_num %= record_count_; // NOTE: 此处可以采用mod一下record_count
   std::string key_num_str = std::to_string(key_num);
-  int zeros = zero_padding_ - key_num_str.length();
-  zeros = std::max(0, zeros);
-  return std::string("user").append(zeros, '0').append(key_num_str);
+  return std::string("user").append(key_num_str); // 减少前导零
+  // int zeros = zero_padding_ - key_num_str.length();
+  // zeros = std::max(0, zeros);
+  // return std::string("user").append(zeros, '0').append(key_num_str);
 }
 
 inline std::string CoreWorkload::NextFieldName() {

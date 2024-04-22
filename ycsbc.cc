@@ -90,6 +90,8 @@ int main(const int argc, const char *argv[]) {
   cerr << "# Transaction throughput (KTPS)" << endl; // TPS: Transactions Per Second
   cerr << props["dbname"] << '\t' << file_name << '\t' << num_threads << '\t';
   cerr << total_ops / duration / 1000 << endl;
+  db->HandleAllData(); // comment 此处调用HandleAllData函数
+  return 0;
 }
 
 string ParseCommandLine(int argc, const char *argv[], utils::Properties &props) {

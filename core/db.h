@@ -20,6 +20,8 @@ class DB {
   static const int kOK = 0;
   static const int kErrorNoData = 1;
   static const int kErrorConflict = 2;
+
+  virtual void HandleAllData() { } // comment 如果子类没有实现这个函数，则函数体为空
   ///
   /// Initializes any state for accessing this DB.
   /// Called once per DB client (thread); there is a single DB instance globally.
