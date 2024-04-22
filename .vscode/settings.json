@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "future": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "string": "cpp"
     }
 }

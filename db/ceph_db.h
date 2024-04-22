@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Jinglei Ren <jinglei@ren.systems>.
 //
 
-#ifndef YCSB_C_BASIC_DB_H_
-#define YCSB_C_BASIC_DB_H_
+#ifndef YCSB_C_CEPH_DB_H_
+#define YCSB_C_CEPH_DB_H_
 
 #include "core/db.h"
 
@@ -96,5 +96,5 @@ class CephDB : public DB {
 
 } // ycsbc
 
-#endif // YCSB_C_BASIC_DB_H_
+#endif // YCSB_C_CEPH_DB_H_
 

@@ -10,11 +10,11 @@
 
 #include <string>
 #include "db/basic_db.h"
+#include "db/ceph_db.h"
 #include "db/lock_stl_db.h"
 #include "db/redis_db.h"
 #include "db/tbb_rand_db.h"
 #include "db/tbb_scan_db.h"
-#include "db/ceph_db.h"
 
 using namespace std;
 using ycsbc::DB;
