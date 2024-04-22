@@ -103,10 +103,12 @@ class CephDB : public DB {
     utils::Timer<double> timer; // 计时器
     timer.Start(); // 计时器开始计时
     cout << "READ " << table << ' ' << key << endl;
-    int parse_key = ParseKey(key); // comment 这个地方会调用ParseKey函数
-    cout << "parse_key: " << parse_key << endl;
     int RealKey = std::stoi(key.substr(4));
     cout << "RealKey: " << RealKey << endl;
+    std::streamoff offset = RealKey * 1024; // Fix: Replace std::streamops with std::streamoff
+    db_file_.seekg(offset, std::ios::beg); // std::ios::beg就是文件的开始位置
+    std::vector<char> buffer(4096);
+    db_file_.read(buffer.data(), 4096);
     READ_TIME.push_back(timer.End());
     return 0;
   }
