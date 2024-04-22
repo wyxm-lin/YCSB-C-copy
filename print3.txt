@@ -1,0 +1,24 @@
+db file opened.
+A new thread begins loading.
+LoadDuration 50.8478
+# Loading throughput (KTPS)
+196.665
+# Loading records:	10000000
+A new thread begins transaction.
+===================================================================
+ReadDuration: 5.61963
+InsertDuration: 0
+UpdateDuration: 8.49802
+DeleteDuration: 0
+ScanDuration: 0
+Operation: 10000000
+AllDuration: 14.1176
+speed: 708.333 KTPS
+bandwidth: 10000000 * 4KB / 1024 / 14.1176 = 2766.89 MB/s
+LoadDuration: 36.2999
+LoadSpeed: 275.483 KTPS
+===================================================================
+# Transaction throughput (KTPS)
+ceph	workloads/myworkload.spec	1	# Transaction duration (s)
+33.8408s
+bandwidth: 10000000 * 4KB / 1024 / 33.8408 = 1154.29 MB/s

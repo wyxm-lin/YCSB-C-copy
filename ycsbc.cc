@@ -25,7 +25,7 @@ string ParseCommandLine(int argc, const char *argv[], utils::Properties &props);
 
 int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops,
     bool is_loading) {
-  db->Init(); // comment 此处初始化其实啥都没干
+  db->Init(is_loading); // comment 此处初始化其实啥都没干
   ycsbc::Client client(*db, *wl);
   int oks = 0;
   for (int i = 0; i < num_ops; ++i) {
@@ -40,6 +40,7 @@ int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops,
 }
 
 int main(const int argc, const char *argv[]) {
+  cerr << "main begin\n";
   utils::Properties props;
   string file_name = ParseCommandLine(argc, argv, props);
 
@@ -55,6 +56,8 @@ int main(const int argc, const char *argv[]) {
   const int num_threads = stoi(props.GetProperty("threadcount", "1"));
 
   // Loads data
+  utils::Timer<double> LoadTime;
+  LoadTime.Start();
   vector<future<int>> actual_ops;
   int total_ops = stoi(props[ycsbc::CoreWorkload::RECORD_COUNT_PROPERTY]);
   for (int i = 0; i < num_threads; ++i) {
@@ -68,7 +71,11 @@ int main(const int argc, const char *argv[]) {
     assert(n.valid());
     sum += n.get();
   }
-  cerr << "# Loading records:\t" << sum << endl;
+  double LoadDuration = LoadTime.End(); // comment 此处结束计时
+  cout << "LoadDuration" << " " << LoadDuration << endl;
+  cout << "# Loading throughput (KTPS)" << endl; // TPS: Transactions Per Second
+  cout << total_ops / LoadDuration / 1000 << endl;
+  cout << "# Loading records:\t" << sum << endl;
 
   // Peforms transactions
   actual_ops.clear(); // comment 清空
@@ -87,10 +94,12 @@ int main(const int argc, const char *argv[]) {
     sum += n.get();
   }
   double duration = timer.End(); // 此处结束计时
-  cerr << "# Transaction throughput (KTPS)" << endl; // TPS: Transactions Per Second
-  cerr << props["dbname"] << '\t' << file_name << '\t' << num_threads << '\t';
-  cerr << total_ops / duration / 1000 << endl;
   db->HandleAllData(); // comment 此处调用HandleAllData函数
+  cout << "# Transaction throughput (KTPS)" << endl; // TPS: Transactions Per Second
+  cout << props["dbname"] << '\t' << file_name << '\t' << num_threads << '\t';
+  cout << "# Transaction duration (s)" << endl;
+  cout << duration << "s" << endl;
+  cout << "bandwidth: " << total_ops << " * " << "4KB / 1024 / " << duration << " = " << total_ops * 4 / 1024 / duration<< " MB/s" << endl;
   return 0;
 }
 

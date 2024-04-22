@@ -1,0 +1,187 @@
+
+本地nvme1n1盘 + 10000K个操作 + 50%读 + 50%写 + 一个client
+结果
+    A new thread begins loading.
+    A new thread begins transaction.
+    ReadDuration: 26.372
+    InsertDuration: 0
+    UpdateDuration: 36.3324
+    DeleteDuration: 0
+    ScanDuration: 0
+    Operation: 10000000
+    AllDuration: 62.7044
+    speed: 159.478 KTPS
+    bandwidth: 10000000 * 4KB / 1024 / 62.7044 = 622.955 MB/s
+read速率
+    5 * 10 ^ 6 * 4KB / 1024 / 26.372s = 740MB/s 
+write速率
+    5 * 10 ^ 6 * 4KB / 1024 / 36.3324s = 537.57MB/s
+
+    db file opened.
+    A new thread begins loading.
+    A new thread begins transaction.
+    ReadDuration: 25.0964
+    InsertDuration: 0
+    UpdateDuration: 37.1687
+    DeleteDuration: 0
+    ScanDuration: 0
+    Operation: 10000000
+    AllDuration: 62.2652
+    speed: 160.603 KTPS
+    bandwidth: 10000000 * 4KB / 1024 / 62.2652 = 627.349 MB/s
+    LoadDuration: 64.2954
+    LoadSpeed: 155.532 KTPS
+
+    db file opened.
+    A new thread begins loading.
+    A new thread begins transaction.
+    ReadDuration: 24.0878
+    InsertDuration: 0
+    UpdateDuration: 35.2084
+    DeleteDuration: 0
+    ScanDuration: 0
+    Operation: 10000000
+    AllDuration: 59.2962
+    speed: 168.645 KTPS
+    bandwidth: 10000000 * 4KB / 1024 / 59.2962 = 658.761 MB/s
+    LoadDuration: 74.0974
+    LoadSpeed: 134.958 KTPS
+
+
+ceph + 10000K个操作 + 50%读 + 50%写 + 一个client
+    A new thread begins loading.
+    A new thread begins transaction.
+    ReadDuration: 103.982
+    InsertDuration: 0
+    UpdateDuration: 30.5302
+    DeleteDuration: 0
+    ScanDuration: 0
+    Operation: 10000000
+    AllDuration: 134.512
+    speed: 74.3428 KTPS
+    bandwidth: 10000000 * 4KB / 1024 / 134.512 = 290.398 MB/s
+有点离谱了，怎么读会比写慢
+
+    A new thread begins loading.
+    A new thread begins transaction.
+    ReadDuration: 26.9331
+    InsertDuration: 0
+    UpdateDuration: 30.4901
+    DeleteDuration: 0
+    ScanDuration: 0
+    Operation: 10000000
+    AllDuration: 57.4231
+    speed: 174.146 KTPS
+    bandwidth: 10000000 * 4KB / 1024 / 57.4231 = 680.249 MB/s
+
+    A new thread begins loading.
+    A new thread begins transaction.
+    ReadDuration: 25.361
+    InsertDuration: 0
+    UpdateDuration: 28.6989
+    DeleteDuration: 0
+    ScanDuration: 0
+    Operation: 10000000
+    AllDuration: 54.0599
+    speed: 184.98 KTPS
+    bandwidth: 10000000 * 4KB / 1024 / 54.0599 = 722.569 MB/s
+
+
+每1000次落盘
+
+
+
+
+
+
+
+mmapRuning iteration 1
+main begin
+319.361
+31.3125
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       347.406
+# Transaction duration (s)
+28.7847
+Runing iteration 2
+main begin
+64.7232
+154.504
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       334.645
+# Transaction duration (s)
+29.8824
+Runing iteration 3
+main begin
+60.099
+166.392
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       318.575
+# Transaction duration (s)
+31.3897
+Runing iteration 4
+main begin
+65.7907
+151.997
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       335.035
+# Transaction duration (s)
+29.8477
+Runing iteration 5
+main begin
+61.6081
+162.316
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       359.614
+# Transaction duration (s)
+27.8076
+Runing iteration 6
+main begin
+59.5497
+167.927
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       314.001
+# Transaction duration (s)
+31.847
+Runing iteration 7
+main begin
+60.4573
+165.406
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       366.638
+# Transaction duration (s)
+27.2748
+Runing iteration 8
+main begin
+67.7665
+147.566
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       361.382
+# Transaction duration (s)
+27.6715
+Runing iteration 9
+main begin
+57.6501
+173.46
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       344.369
+# Transaction duration (s)
+29.0386
+Runing iteration 10
+main begin
+66.0701
+151.354
+# Loading records:      10000000
+# Transaction throughput (KTPS)
+ceph    workloads/myworkload.spec       1       352.287
+# Transaction duration (s)
+28.386

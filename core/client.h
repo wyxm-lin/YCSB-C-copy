@@ -76,14 +76,9 @@ inline int Client::TransactionRead() {
   const std::string &table = workload_.NextTable();
   const std::string &key = workload_.NextTransactionKey();
   std::vector<DB::KVPair> result;
-  cout << "wyxm: " << workload_.read_all_fields() << endl;
   if (!workload_.read_all_fields()) { // comment 是否读全域->不重要
     std::vector<std::string> fields;
     fields.push_back("field" + workload_.NextFieldName());
-    for (auto it : fields) {
-      cout << it << " ";
-    }
-    cout << endl;
     return db_.Read(table, key, &fields, result);
   } else {
     cout << "transaction read all fields\n";

@@ -32,7 +32,24 @@ inline uint64_t FNVHash64(uint64_t val) {
   return hash;
 }
 
-inline uint64_t Hash(uint64_t val) { return FNVHash64(val); }
+constexpr uint32_t kFNVOffsetBasis32 = 2166136261u;
+constexpr uint32_t kFNVPrime32 = 16777619u;
+
+// 32位FNV-1哈希函数
+inline uint32_t FNVHash32(uint32_t val) {
+    uint32_t hash = kFNVOffsetBasis32;
+
+    for (int i = 0; i < 4; i++) {  // 只循环4次，每次处理一个字节
+        uint32_t octet = val & 0xff;  // 提取最低字节
+        val >>= 8;  // 移动到下一个字节
+
+        hash ^= octet;  // XOR当前字节到哈希值
+        hash *= kFNVPrime32;  // 乘以FNV素数
+    }
+    return hash;
+}
+
+inline uint64_t Hash(uint64_t val) { return FNVHash32(val); }
 
 inline double RandomDouble(double min = 0.0, double max = 1.0) {
   static std::default_random_engine generator;

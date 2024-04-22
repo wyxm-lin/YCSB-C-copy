@@ -26,7 +26,7 @@ class DB {
   /// Initializes any state for accessing this DB.
   /// Called once per DB client (thread); there is a single DB instance globally.
   ///
-  virtual void Init() { } // comment 如果子类没有实现这个函数，则函数体为空
+  virtual void Init(bool flag) { } // comment 如果子类没有实现这个函数，则函数体为空
   ///
   /// Clears any state for accessing this DB.
   /// Called once per DB client (thread); there is a single DB instance globally.

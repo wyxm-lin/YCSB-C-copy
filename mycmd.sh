@@ -1,4 +1,5 @@
 ./ycsbc -db ceph -threads 1 -P workloads/myworkload.spec > print.txt
+./ycsbc -db ceph -threads 2 -P workloads/myworkload.spec > print.txt
 
 ./ycsbc -db basic -threads 1 -P workloads/workloada.spec
 sudo apt-get install libtbb-dev
