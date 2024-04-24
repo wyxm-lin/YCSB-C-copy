@@ -16,6 +16,7 @@
 #include "db/tbb_rand_db.h"
 #include "db/tbb_scan_db.h"
 #include "db/real_ceph_db.h"
+#include "db/xihu_db.h"
 
 using namespace std;
 using ycsbc::DB;
@@ -38,6 +39,8 @@ DB* DBFactory::CreateDB(utils::Properties &props) {
     return new CephDB;
   } else if (props["dbname"] == "real_ceph") {
     return new RealCephDB;
+  } else if (props["dbname"] == "xihu") {
+    return new XihuDB;
   } else return NULL;
 }
 

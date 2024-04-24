@@ -19,6 +19,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "core/timer.h"
+// #include "../eRPC/src/rpc.h"
+// #include "../eRPC/xihu/YCSB/client.h"
 
 using std::cout;
 using std::endl;
@@ -96,10 +98,37 @@ class XihuDB : public DB {
     utils::Timer<double> timer;
     timer.Start(); 
 
-    int RealKey = std::stoi(key.substr(4));
-    std::streamoff offset = RealKey * 4096;
-
     READ_TIME.push_back(timer.End());
+    return 0;
+  }
+
+  int Update(const std::string &table, const std::string &key,
+             std::vector<KVPair> &values) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    ops ++;
+    utils::Timer<double> timer;
+    timer.Start();
+
+    UPDATE_TIME.push_back(timer.End());
+    return 0;
+  }
+
+  int Insert(const std::string &table, const std::string &key, // comment 原先该函数的实现 仅仅只是把key和value打印出来 没有实际存储起来
+             std::vector<KVPair> &values) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (phase == TRANSACTION) {
+      ops ++;
+    }
+    utils::Timer<double> timer;
+    timer.Start();
+  
+
+    if (phase == TRANSACTION) { 
+      INSERT_TIME.push_back(timer.End());
+    }
+    else {
+      LOAD_TIME.push_back(timer.End());
+    }
     return 0;
   }
 
@@ -114,41 +143,6 @@ class XihuDB : public DB {
     cout << "XIHU DB SCAN not implemented\n";
 
     SCAN_TIME.push_back(timer.End());
-    return 0;
-  }
-
-  int Update(const std::string &table, const std::string &key,
-             std::vector<KVPair> &values) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    ops ++;
-    utils::Timer<double> timer;
-    timer.Start();
-
-    int RealKey = std::stoi(key.substr(4));
-    std::streamoff offset = RealKey * 4096;
-
-    UPDATE_TIME.push_back(timer.End());
-    return 0;
-  }
-
-  int Insert(const std::string &table, const std::string &key, // comment 原先该函数的实现 仅仅只是把key和value打印出来 没有实际存储起来
-             std::vector<KVPair> &values) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (phase == TRANSACTION) {
-      ops ++;
-    }
-    utils::Timer<double> timer; // 计时器
-    timer.Start(); // 计时器开始计时
-
-    int RealKey = std::stoi(key.substr(4));
-    std::streamoff offset = RealKey * 4096;
-
-    if (phase == TRANSACTION) { // 只有transaction阶段才会记录时间
-      INSERT_TIME.push_back(timer.End());
-    }
-    else {
-      LOAD_TIME.push_back(timer.End());
-    }
     return 0;
   }
 
