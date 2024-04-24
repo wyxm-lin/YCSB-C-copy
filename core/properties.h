@@ -15,6 +15,12 @@
 #include <cassert>
 #include "utils.h"
 
+enum Phase {
+  INVALID,
+  LOAD,
+  TRANSACTION
+};
+
 namespace utils {
 
 class Properties {

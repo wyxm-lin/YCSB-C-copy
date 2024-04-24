@@ -1,4 +1,4 @@
-./ycsbc -db ceph -threads 1 -P workloads/myworkload.spec > print.txt
+./ycsbc -db real_ceph -threads 1 -P workloads/myworkload.spec > print$(date +%Y%m%d%H%M%S).txt
 ./ycsbc -db ceph -threads 2 -P workloads/myworkload.spec > print.txt
 
 ./ycsbc -db basic -threads 1 -P workloads/workloada.spec

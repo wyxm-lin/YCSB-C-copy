@@ -1,0 +1,1 @@
+g++ -o main rbd.cc -lrbd -lrados -std=c++11

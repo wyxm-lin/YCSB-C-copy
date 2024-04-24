@@ -11,15 +11,21 @@
 # rbd_file="/home/linguangming/wyxm/YCSB-C/RBD/simpledb.txt"
 # sudo dd if=input.txt of=$rbd_file bs=4K count=4194304 iflag=fullblock oflag=direct
 
-file="/home/linguangming/wyxm/YCSB-C/DBMS/ddfile.txt"
-sudo dd if=/dev/zero of=$file bs=4K count=5000000
+# file="/home/linguangming/wyxm/YCSB-C/DBMS/ddfile.txt"
+# sudo dd if=/dev/zero of=$file bs=4K count=5000000
 
+file="/home/linguangming/wyxm/YCSB-C/RBD/ddfile.txt"
+sudo dd if=/dev/zero of=$file bs=4K count=1000000 oflag=direct
 
 # real_disk="/home/linguangming/outcome/AboutRAM/testfile"
 # echo "Testing real disk write speed..."
 # dd if=/dev/zero of=$real_disk bs=1M count=1024 oflag=direct
 # echo "Testing real disk read speed..."
 # dd if=$real_disk of=/dev/null bs=1M count=1024 iflag=direct
+
+rados bench -p MyTest -b 4K 30 write &
+rados bench -p MyTest -b 4M 30 write &
+rados bench -o -p MyTest -b 4K 30 write
 
 
 

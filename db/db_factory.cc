@@ -15,6 +15,7 @@
 #include "db/redis_db.h"
 #include "db/tbb_rand_db.h"
 #include "db/tbb_scan_db.h"
+#include "db/real_ceph_db.h"
 
 using namespace std;
 using ycsbc::DB;
@@ -35,6 +36,8 @@ DB* DBFactory::CreateDB(utils::Properties &props) {
     return new TbbScanDB;
   } else if (props["dbname"] == "ceph") {
     return new CephDB;
+  } else if (props["dbname"] == "real_ceph") {
+    return new RealCephDB;
   } else return NULL;
 }
 

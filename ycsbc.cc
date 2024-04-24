@@ -35,7 +35,6 @@ int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops,
       oks += client.DoTransaction();
     }
   }
-  db->Close();
   return oks;
 }
 
@@ -93,13 +92,15 @@ int main(const int argc, const char *argv[]) {
     assert(n.valid());
     sum += n.get();
   }
+  db->Close(); // 记得关闭
+  // db->FinalFlushDisk(); // comment 此处调用FinishAllData函数
   double duration = timer.End(); // 此处结束计时
   db->HandleAllData(); // comment 此处调用HandleAllData函数
   cout << "# Transaction throughput (KTPS)" << endl; // TPS: Transactions Per Second
   cout << props["dbname"] << '\t' << file_name << '\t' << num_threads << '\t';
   cout << "# Transaction duration (s)" << endl;
   cout << duration << "s" << endl;
-  cout << "bandwidth: " << total_ops << " * " << "4KB / 1024 / " << duration << " = " << total_ops * 4 / 1024 / duration<< " MB/s" << endl;
+  cout << "bandwidth: " << total_ops << " * " << "4KB / 1024 / " << duration << " = " << 1.0 * total_ops * 4 / 1024 / duration<< " MB/s" << endl;
   return 0;
 }
 

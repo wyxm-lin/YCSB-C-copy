@@ -2,9 +2,11 @@
 //  ceph_db.h
 //  YCSB-C
 //
-//  Created by Jinglei Ren on 12/17/14.
-//  Copyright (c) 2014 Jinglei Ren <jinglei@ren.systems>.
-//
+
+// MSYNC 是同步落盘
+// MASYNC 是异步落盘
+
+#define MSYNC
 #define MMAP
 
 #ifndef MMAP
@@ -29,14 +31,6 @@
 using std::cout;
 using std::endl;
 using std::vector;
-
-// static string ceph_db_path = "../DBMS/simpledb.txt"; // comment 这个是数据库的路径
-
-enum Phase {
-  INVALID,
-  LOAD,
-  TRANSACTION
-};
 
 namespace ycsbc {
 std::string ceph_db_path = "/home/linguangming/wyxm/YCSB-C/DBMS/simpledb.txt"; // comment 这个是数据库的路径
@@ -101,7 +95,7 @@ class CephDB : public DB {
     cout << "AllDuration: " << AllDuration << endl;
     double speed = ops / AllDuration / 1000;
     cout << "speed: " << speed << " KTPS" << endl;
-    cout << "bandwidth: " << ops << " * " << "4KB / 1024 / " << AllDuration << " = " << ops * 4 / 1024 / AllDuration<< " MB/s" << endl;
+    cout << "bandwidth: " << ops << " * " << "4KB / 1024 / " << AllDuration << " = " << 1.0 * ops * 4 / 1024 / AllDuration<< " MB/s" << endl;
     double LoadDuration = 0;
     for (auto i : LOAD_TIME) {
       LoadDuration += i;
@@ -238,13 +232,7 @@ class CephDB : public DB {
 #endif // YCSB_C_CEPH_DB_H_
 #endif
 
-//
-//  basic_db.h
-//  YCSB-C
-//
-//  Created by Jinglei Ren on 12/17/14.
-//  Copyright (c) 2014 Jinglei Ren <jinglei@ren.systems>.
-//
+
 #ifdef MMAP
 #ifndef YCSB_C_CEPH_DB_H_
 #define YCSB_C_CEPH_DB_H_
@@ -269,14 +257,6 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-// static string ceph_db_path = "../DBMS/simpledb.txt"; // comment 这个是数据库的路径
-
-enum Phase {
-  INVALID,
-  LOAD,
-  TRANSACTION
-};
-
 namespace ycsbc {
 // std::string ceph_db_path = "/home/linguangming/wyxm/YCSB-C/DBMS/db.txt"; // comment 这个是数据库的路径
 std::string ceph_db_path = "/home/linguangming/wyxm/YCSB-C/RBD/db.txt"; // comment 这个是数据库的路径
@@ -296,6 +276,7 @@ class CephDB : public DB {
       cout << "fstat db file failed." << endl;
       exit(-1);
     }
+    filesize = sb.st_size;
     addr = mmap(NULL, sb.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (addr == MAP_FAILED) {
       cout << "mmap db file failed." << endl;
@@ -305,6 +286,7 @@ class CephDB : public DB {
   }
 
   ~CephDB() { // comment 这个析构函数什么都没干
+    munmap(addr, filesize);
     if (close(fd) == -1) {
       cout << "close db file failed." << endl;
       exit(-1);
@@ -330,6 +312,7 @@ class CephDB : public DB {
     double UpdateDuration = 0;
     double DeleteDuration = 0;
     double ScanDuration = 0;
+    double FlushDuration = 0;
     for (auto i : READ_TIME) {
       ReadDuration += i;
     }
@@ -345,17 +328,21 @@ class CephDB : public DB {
     for (auto i : SCAN_TIME) {
       ScanDuration += i;
     }
+    for (auto i : FLUSH_TIME) {
+      FlushDuration += i;
+    }
     cout << "ReadDuration: " << ReadDuration << endl;
     cout << "InsertDuration: " << InsertDuration << endl;
     cout << "UpdateDuration: " << UpdateDuration << endl;
     cout << "DeleteDuration: " << DeleteDuration << endl;
     cout << "ScanDuration: " << ScanDuration << endl;
+    cout << "FlushDuration: " << FlushDuration << endl;
     cout << "Operation: " << ops << endl;
-    double AllDuration = ReadDuration + InsertDuration + UpdateDuration + DeleteDuration + ScanDuration;
+    double AllDuration = ReadDuration + InsertDuration + UpdateDuration + DeleteDuration + ScanDuration + FlushDuration;
     cout << "AllDuration: " << AllDuration << endl;
     double speed = ops / AllDuration / 1000;
     cout << "speed: " << speed << " KTPS" << endl;
-    cout << "bandwidth: " << ops << " * " << "4KB / 1024 / " << AllDuration << " = " << ops * 4 / 1024 / AllDuration<< " MB/s" << endl;
+    cout << "bandwidth: " << ops << " * " << "4KB / 1024 / " << AllDuration << " = " << 1.0 * ops * 4 / 1024 / AllDuration<< " MB/s" << endl;
     double LoadDuration = 0;
     for (auto i : LOAD_TIME) {
       LoadDuration += i;
@@ -407,6 +394,10 @@ class CephDB : public DB {
     char* offset_addr = static_cast<char*>(addr) + 1LL * RealKey * 4096;
     memset(offset_addr, 'a', 4096);
 
+#ifdef MSYNC
+    msync(offset_addr, 4096, MS_SYNC); // 同步落盘
+#endif
+
     UPDATE_TIME.push_back(timer.End());
     return 0;
   }
@@ -414,17 +405,22 @@ class CephDB : public DB {
   int Insert(const std::string &table, const std::string &key, // comment 原先该函数的实现 仅仅只是把key和value打印出来 没有实际存储起来
              std::vector<KVPair> &values) {
     std::lock_guard<std::mutex> lock(mutex_);
+    if (phase == INVALID || phase == LOAD) {
+      return 0;
+    }
     if (phase == TRANSACTION) {
       ops ++;
     }
     utils::Timer<double> timer; // 计时器
     timer.Start(); // 计时器开始计时
 
-    // cout << "begin" << endl;
     int RealKey = std::stoi(key.substr(4));
     char* offset_addr = static_cast<char*>(addr) + 1LL * RealKey * 4096;
     memset(offset_addr, 'b', 4096);
-    // cout << "end" << endl;
+    
+#ifdef MSYNC
+    msync(offset_addr, 4096, MS_SYNC); // 落盘
+ #endif
 
     if (phase == TRANSACTION) { // 只有transaction阶段才会记录时间
       INSERT_TIME.push_back(timer.End());
@@ -447,6 +443,16 @@ class CephDB : public DB {
     return 0; 
   }
 
+  void FinalFlushDisk() {
+    utils::Timer<double> timer; // 计时器
+    timer.Start(); // 计时器开始计时
+    if (msync(addr, filesize, MS_SYNC) == -1) {
+      cout << "msync failed." << endl;
+      exit(-1);
+    }
+    FLUSH_TIME.push_back(timer.End());
+  }
+
  private:
   std::mutex mutex_; // 
   vector<double> READ_TIME;
@@ -455,9 +461,11 @@ class CephDB : public DB {
   vector<double> DELETE_TIME;
   vector<double> SCAN_TIME;
   vector<double> LOAD_TIME;
+  vector<double> FLUSH_TIME;
   long long ops = 0;
   int fd;
   void* addr;
+  off_t filesize;
   enum Phase phase;
 };
 
