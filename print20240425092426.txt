@@ -1,0 +1,33 @@
+High resolution clock period: 1/1000000000 seconds
+Created a cluster handle.
+Read the config file.
+Connected to the cluster.
+Created I/O context.
+Opened rbd image ceph-rbd-image1.img.
+db file opened.
+A new thread begins loading.
+LoadDuration 0.000727549
+# Loading throughput (KTPS)
+137.448
+# Loading records:	100
+NO error
+A new thread begins transaction.
+No error
+close OK
+===================================================================
+ReadDuration: 0.000343733
+InsertDuration: 0
+UpdateDuration: 0.000528204
+DeleteDuration: 0
+ScanDuration: 0
+FlushDuration: 0
+Operation: 100
+AllDuration: 0.000871937
+speed: 114.687 KTPS
+bandwidth: 100 * 4KB / 1024 / 0.000871937 = 447.997 MB/s
+===================================================================
+CLOSE_TIME: 301501us
+# Transaction throughput (KTPS)
+real_ceph	workloads/myworkload.spec	1	# Transaction duration (s)
+0.309633s
+bandwidth: 100 * 4KB / 1024 / 0.309633 = 1.26158 MB/s
