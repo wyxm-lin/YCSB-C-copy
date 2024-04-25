@@ -215,7 +215,7 @@ class RealCephDB : public DB {
     cout << "speed: " << speed << " KTPS" << endl;
     cout << "bandwidth: " << ops << " * " << "4KB / 1024 / " << AllDuration << " = " << 1.0 * ops * 4 / 1024 / AllDuration<< " MB/s" << endl;
     cout << "===================================================================\n";
-    cout << "CLOSE_TIME: " << CLOSE_TIME << "us" << endl;
+    cout << "CLOSE_TIME: " << CLOSE_TIME << "ns" << endl;
   }
 
   int Read(const std::string &table, const std::string &key,
