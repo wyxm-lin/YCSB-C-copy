@@ -1,31 +1,11 @@
-# YCSB-C
-
-Yahoo! Cloud Serving Benchmark in C++, a C++ version of YCSB (https://github.com/brianfrankcooper/YCSB/wiki)
-
-## Quick Start
-
-To build YCSB-C on Ubuntu, for example:
-
 ```
-$ sudo apt-get install libtbb-dev
-$ make
-```
-
-As the driver for Redis is linked by default, change the runtime library path
-to include the hiredis library by:
-```
+make clean
+make
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
-```
+./ycsbc -db real_ceph -threads 1 -P workloads/myworkload.spec > print$(date +%Y%m%d%H%M%S).txt
 
-Run Workload A with a [TBB](https://www.threadingbuildingblocks.org)-based
-implementation of the database, for example:
-```
-./ycsbc -db tbb_rand -threads 4 -P workloads/workloada.spec
-```
-Also reference run.sh and run\_redis.sh for the command line. See help by
-invoking `./ycsbc` without any arguments.
+# 解释：real_ceph是db的名称 
+# workloads/myworkload是负载 
+# threads 1是1个线程
 
-Note that we do not have load and run commands as the original YCSB. Specify
-how many records to load by the recordcount property. Reference properties
-files in the workloads dir.
-
+```
