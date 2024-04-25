@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "/home/linguangming/wyxm/JusteRPC/eRPC/src/rpc.h"
+#include "rpc.h"
 
 static constexpr uint8_t kReqType = 2;
 

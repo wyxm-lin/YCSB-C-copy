@@ -99,9 +99,8 @@ class XihuDB : public DB {
     timer.Start(); 
 
     cout << "XIHU DB BEGIN READ\n";
-    int RealKey = stoi(key.substr(4));
-    RealKey %= 100;
     char buf[BLOCKSIZE];
+    int RealKey = stoi(key.substr(4));
     client.read(RealKey, 1, buf);
     cout << "XIHU DB END READ\n";
 

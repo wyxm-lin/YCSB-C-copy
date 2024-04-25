@@ -1,4 +1,5 @@
 #include <queue>
+#include <iostream>
 
 #include "db/xihu_common.h"
 
@@ -9,6 +10,7 @@ static erpc::MsgBuffer reqs[MSG_BUFFER_NUM];
 static erpc::MsgBuffer resps[MSG_BUFFER_NUM];
 static std::queue<int64_t> avail;
 
+using std::cout;
 class XihuClient {
  private:
   erpc::Nexus nexus;
@@ -67,6 +69,7 @@ void req_handler(erpc::ReqHandle *req_handle, void *) {
 }
 
 XihuClient::XihuClient() : nexus("10.10.10.13:31860") {
+  cout << "XihuClient init\n";
   nexus.register_req_func(kReqType, req_handler);
   rpc = new erpc::Rpc<erpc::CTransport>(&nexus, nullptr, 0, sm_handler);
   for (int i = 0; i < MSG_BUFFER_NUM; i++) {
@@ -74,8 +77,9 @@ XihuClient::XihuClient() : nexus("10.10.10.13:31860") {
     reqs[i] = rpc->alloc_msg_buffer_or_die(MAX_MSG_SIZE);
     resps[i] = rpc->alloc_msg_buffer_or_die(MAX_MSG_SIZE);
   }
-  session = rpc->create_session("10.10.10.14:31860", 0);
+  session = rpc->create_session("10.10.10.13:31861", 0);
   while (!rpc->is_connected(session)) rpc->run_event_loop_once();
+  cout << "XihuClient init end\n";
 }
 
 XihuClient::~XihuClient() {
@@ -114,7 +118,7 @@ int XihuClient::read(uint64_t blockID, uint64_t len, void *dstBuf) {
   ms.bid = blockID;
   ms.ptr = (uint64_t)dstBuf;
   ms.pip = ms.nxt = std::min(PIPLINE_PKT_DEPTH, len);
-
+  cout << "read begin to loop\n";
   for (int i = 0; i < ms.nxt; i++) {
     int64_t k = avail.front();
     avail.pop();
@@ -123,10 +127,12 @@ int XihuClient::read(uint64_t blockID, uint64_t len, void *dstBuf) {
     CommonMsg *msg = reinterpret_cast<CommonMsg *>(req.buf_);
     msg->type = MsgType::Read;
     msg->u.Request.bid = blockID + i;
+    cout << "xihu read begin to resize_msg_buffer\n";
     rpc->resize_msg_buffer(&req, sizeof(CommonMsg));
+    cout << "xihu read begin to enqueue_request\n";
     rpc->enqueue_request(session, kReqType, &req, &resp, cont_func, (void *)k);
   }
-
+  cout << "read end to loop\n";
   // 数据请求仍实现为阻塞式
   while (ms.nxt < ms.tot + ms.pip) rpc->run_event_loop_once();
   return 0;

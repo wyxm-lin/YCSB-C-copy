@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-std=c++11 -g -Wall -pthread -I./
+CFLAGS=-std=c++11 -O2 -Wall -pthread -I./ -DERPC_INFINIBAND=true
 LDFLAGS= -lpthread -ltbb -lhiredis -lrados -lrbd -L../eRPC/build -lerpc -lpthread -lnuma -ldl -libverbs
 SUBDIRS=core db redis
 SUBSRCS=$(wildcard core/*.cc) $(wildcard db/*.cc)
