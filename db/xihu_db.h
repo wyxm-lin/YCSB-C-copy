@@ -19,8 +19,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "core/timer.h"
-// #include "../eRPC/src/rpc.h"
-// #include "../eRPC/xihu/YCSB/client.h"
+#include "db/xihu_client.h"
+
 
 using std::cout;
 using std::endl;
@@ -160,6 +160,7 @@ class XihuDB : public DB {
   }
 
  private:
+  XihuClient client;
   std::mutex mutex_; // 
   vector<double> READ_TIME;
   vector<double> INSERT_TIME;

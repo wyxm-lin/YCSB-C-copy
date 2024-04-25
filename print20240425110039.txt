@@ -1,0 +1,24 @@
+39:493540 WARNG: eRPC Nexus: Testing enabled. Perf will be low.
+XihuClient::XihuClient()
+XiHu DB opened.
+A new thread begins loading.
+LoadDuration 0.001014
+# Loading throughput (KTPS)
+98.6194
+# Loading records:	100
+A new thread begins transaction.
+ReadDuration: 1.425e-06
+InsertDuration: 0
+UpdateDuration: 1.471e-06
+DeleteDuration: 0
+ScanDuration: 0
+Operation: 100
+AllDuration: 2.896e-06
+speed: 34530.4 KTPS
+bandwidth: 100 * 4KB / 1024 / 2.896e-06 = 134884 MB/s
+LoadDuration: 9.978e-06
+LoadSpeed: 10022 KTPS
+# Transaction throughput (KTPS)
+xihu	workloads/myworkload.spec	1	# Transaction duration (s)
+0.000953308s
+bandwidth: 100 * 4KB / 1024 / 0.000953308 = 409.757 MB/s
