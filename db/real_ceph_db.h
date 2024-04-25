@@ -226,12 +226,12 @@ class RealCephDB : public DB {
     utils::Timer<double> timer;
     timer.Start(); 
 
-    char* buff = (char*)malloc(BlockSize);
+    char* buff = (char*)malloc(CEPHBLOCKSIZE);
     long long RealKey = std::stoi(key.substr(4));
-    long long offset = 1LL * RealKey * BlockSize;
+    long long offset = 1LL * RealKey * CEPHBLOCKSIZE;
     rbd_completion_t comp;
     rbd_aio_create_completion(buff, aio_completion_callback, &comp);
-    rbd_aio_read(image, offset, BlockSize, buff, comp);
+    rbd_aio_read(image, offset, CEPHBLOCKSIZE, buff, comp);
     async_op_count++;
 
     READ_TIME.push_back(timer.End());
@@ -245,14 +245,14 @@ class RealCephDB : public DB {
     utils::Timer<double> timer;
     timer.Start();
 
-    char buf[BlockSize];
-    memset(buf, 'a', BlockSize); // 注意此处需要占用写4096的时间
-    buf[BlockSize - 1] = '\0';
+    char buf[CEPHBLOCKSIZE];
+    memset(buf, 'a', CEPHBLOCKSIZE); // 注意此处需要占用写4096的时间
+    buf[CEPHBLOCKSIZE - 1] = '\0';
     int RealKey = std::stoi(key.substr(4));
-    long long offset = 1LL * RealKey * BlockSize;
+    long long offset = 1LL * RealKey * CEPHBLOCKSIZE;
     rbd_completion_t comp;
     rbd_aio_create_completion(NULL, aio_completion_write_callback, &comp);
-    rbd_aio_write(image, offset, BlockSize, buf, comp);
+    rbd_aio_write(image, offset, CEPHBLOCKSIZE, buf, comp);
     async_op_count++;
 
     UPDATE_TIME.push_back(timer.End());
@@ -271,14 +271,14 @@ class RealCephDB : public DB {
     utils::Timer<double> timer; // 计时器
     timer.Start(); // 计时器开始计时
 
-    char buf[BlockSize];
-    memset(buf, 'a', BlockSize); // 注意此处需要占用写4096的时间
-    buf[BlockSize - 1] = '\0';
+    char buf[CEPHBLOCKSIZE];
+    memset(buf, 'a', CEPHBLOCKSIZE); // 注意此处需要占用写4096的时间
+    buf[CEPHBLOCKSIZE - 1] = '\0';
     int RealKey = std::stoi(key.substr(4));
-    long long offset = 1LL * RealKey * BlockSize;
+    long long offset = 1LL * RealKey * CEPHBLOCKSIZE;
     rbd_completion_t comp;
     rbd_aio_create_completion(NULL, aio_completion_write_callback, &comp);
-    rbd_aio_write(image, offset, BlockSize, buf, comp);
+    rbd_aio_write(image, offset, CEPHBLOCKSIZE, buf, comp);
     async_op_count++;
 
     if (phase == TRANSACTION) { // 只有transaction阶段才会记录时间
@@ -331,7 +331,7 @@ class RealCephDB : public DB {
   rados_t cluster;
   rados_ioctx_t io;
   rbd_image_t image;
-  const int BlockSize = 4096;
+  const int CEPHBLOCKSIZE = 4096;
   enum Phase phase;
 
 };

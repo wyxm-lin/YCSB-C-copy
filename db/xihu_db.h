@@ -98,6 +98,13 @@ class XihuDB : public DB {
     utils::Timer<double> timer;
     timer.Start(); 
 
+    cout << "XIHU DB BEGIN READ\n";
+    int RealKey = stoi(key.substr(4));
+    RealKey %= 100;
+    char buf[BLOCKSIZE];
+    client.read(RealKey, 1, buf);
+    cout << "XIHU DB END READ\n";
+
     READ_TIME.push_back(timer.End());
     return 0;
   }
@@ -109,6 +116,12 @@ class XihuDB : public DB {
     utils::Timer<double> timer;
     timer.Start();
 
+    int RealKey = stoi(key.substr(4));
+    char buf[BLOCKSIZE];
+    memset(buf, 'a', BLOCKSIZE);
+    buf[BLOCKSIZE - 1] = '\0';
+    // client.write(RealKey, 1, buf);
+
     UPDATE_TIME.push_back(timer.End());
     return 0;
   }
@@ -116,12 +129,20 @@ class XihuDB : public DB {
   int Insert(const std::string &table, const std::string &key, // comment 原先该函数的实现 仅仅只是把key和value打印出来 没有实际存储起来
              std::vector<KVPair> &values) {
     std::lock_guard<std::mutex> lock(mutex_);
+    if (phase == INVALID || phase == LOAD) {
+      return 0;
+    }
     if (phase == TRANSACTION) {
       ops ++;
     }
     utils::Timer<double> timer;
     timer.Start();
-  
+
+    int RealKey = stoi(key.substr(4));
+    char buf[BLOCKSIZE];
+    memset(buf, 'b', BLOCKSIZE);
+    buf[BLOCKSIZE - 1] = '\0';
+    // client.write(RealKey, 1, buf);
 
     if (phase == TRANSACTION) { 
       INSERT_TIME.push_back(timer.End());
@@ -153,7 +174,6 @@ class XihuDB : public DB {
     timer.Start(); // 计时器开始计时
 
     cout << "DELETE " << table << ' ' << key << endl;
-
 
     DELETE_TIME.push_back(timer.End());
     return 0; 

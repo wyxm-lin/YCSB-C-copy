@@ -1,9 +1,6 @@
 #include <queue>
 
 #include "db/xihu_common.h"
-#include <iostream>
-
-using std::cout;
 
 Mission ms;
 uint32_t session;
@@ -70,16 +67,15 @@ void req_handler(erpc::ReqHandle *req_handle, void *) {
 }
 
 XihuClient::XihuClient() : nexus("10.10.10.13:31860") {
-  cout << "XihuClient::XihuClient()" << std::endl;
-  // nexus.register_req_func(kReqType, req_handler);
-  // rpc = new erpc::Rpc<erpc::CTransport>(&nexus, nullptr, 0, sm_handler);
-  // for (int i = 0; i < MSG_BUFFER_NUM; i++) {
-  //   avail.push(i);
-  //   reqs[i] = rpc->alloc_msg_buffer_or_die(MAX_MSG_SIZE);
-  //   resps[i] = rpc->alloc_msg_buffer_or_die(MAX_MSG_SIZE);
-  // }
-  // session = rpc->create_session("10.10.10.14:31860", 0);
-  // while (!rpc->is_connected(session)) rpc->run_event_loop_once();
+  nexus.register_req_func(kReqType, req_handler);
+  rpc = new erpc::Rpc<erpc::CTransport>(&nexus, nullptr, 0, sm_handler);
+  for (int i = 0; i < MSG_BUFFER_NUM; i++) {
+    avail.push(i);
+    reqs[i] = rpc->alloc_msg_buffer_or_die(MAX_MSG_SIZE);
+    resps[i] = rpc->alloc_msg_buffer_or_die(MAX_MSG_SIZE);
+  }
+  session = rpc->create_session("10.10.10.14:31860", 0);
+  while (!rpc->is_connected(session)) rpc->run_event_loop_once();
 }
 
 XihuClient::~XihuClient() {
